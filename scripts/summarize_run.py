@@ -45,6 +45,16 @@ def fmt_score_row(dim, score, palette):
     return f"| {dim} | {score} | {palette} |{flag}"
 
 
+def target_system_message(sample):
+    for m in sample.get("messages", []):
+        if m.get("role") != "assistant":
+            continue
+        for c in m.get("tool_calls") or []:
+            if c.get("function") == "set_system_message":
+                return (c.get("arguments") or {}).get("system_message")
+    return None
+
+
 def summarize_sample(sample, palettes):
     lines = []
     sid = sample.get("id", "unknown")
@@ -55,6 +65,13 @@ def summarize_sample(sample, palettes):
     tags = meta.get("tags")
     if tags:
         lines.append(f"Tags: {', '.join(tags)}")
+        lines.append("")
+
+    sys_msg = target_system_message(sample)
+    if sys_msg:
+        lines.append("**Target system prompt** (set by auditor):")
+        lines.append("")
+        lines.append(f"> {sys_msg}")
         lines.append("")
 
     scores = sample.get("scores", {}).get("audit_judge", {})
@@ -68,7 +85,7 @@ def summarize_sample(sample, palettes):
 
     summary_text = smeta.get("summary")
     if summary_text:
-        lines.append("**Judge summary:**")
+        lines.append("**Judge summary** (`[M#]` = message ID in the transcript, e.g. `inspect view` or the JSON dump — M1 is usually the target's system prompt above):")
         lines.append("")
         lines.append(summary_text.strip())
         lines.append("")
