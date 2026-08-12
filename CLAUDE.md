@@ -13,14 +13,15 @@ learn something new.
 
 ## Operating principles
 - **NO DESIGN DECISIONS.** Claude makes no design decisions regarding experimental taste. Human specifies all such matters; Claude acts only as (a) brainstorming partner and (b) implementer for human's spec. Zero creative liberties.
-- **80/20.** $20 and ~2h/part. Prefer the design that gets 80% of the finding for 20% of
-  the spend. Quantified variance beats a bigger n.
+- **Minimize sources of truth** Particularly when writing documentation (but this applies to code as well): if something exists already in the codebase, ex. model pricing or env variable names, reference the source of truth for it before rewriting it to avoid drift.
+- **Maximum Succintness** 
+Don't give narrative prose; stick to the facts and use less words.
+- **80/20.** $20 and ~2h/part. Prefer the design that gets 80% of the finding for 20% of the money and time spend.
 - **Defend every choice.** Every experiment gets a METHODOLOGY.md entry: what we did, what
   we chose, and *why over the alternative*. The rejected alternative is what makes it a
   defense rather than a diary. Budget-driven cuts get stated, not silently taken.
 - **The user runs all commands.** Write runnable scripts and configs; never execute evals.
-- **Never guess a model ID or API detail.** Check the reference docs; if absent, verify
-  before writing it into a script.
+- **Never guess a model ID or API detail.** Check the reference docs; if absent, verify with human before writing it into a script.
 
 ## Budget discipline
 - **Never launch a multi-sample run without a `--limit 1` smoke test first.**
@@ -56,10 +57,10 @@ learn something new.
 Update the moment a pilot concludes, with a one-line justification and a pointer to the
 experiment dir.
 - auditor: <TBD> — experiments/01_auditor_pilot/
-- judges: <TBD> — see METHODOLOGY.md
+- judges: see METHODOLOGY.md
 - Never hardcode API keys; use .env (see .env.example).
 
 ## Writing
 Concise. No LLM padding, no restating the question, no summarizing what was just said.
-Reference docs are documentation only — no prose, no narrative, no state that goes stale.
+Reference docs are documentation only — no prose, no narrative, no state that goes stale. This file is for rules only, no current state (nothing that COULD get stale).
 The README *is* the report and is read first: ~1 page plus figures.

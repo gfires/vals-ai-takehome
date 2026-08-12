@@ -13,9 +13,9 @@ machine-readable table, provider pricing pages for the source of truth.
 | Target A | GPT-5 mini | `openai/gpt-5-mini` |
 | Target B | Claude Haiku 4.5 | `anthropic/claude-haiku-4-5` |
 | Auditor cand. 1 | GPT-5.6 Luna | `openai/gpt-5.6-luna` |
-| Auditor cand. 2 | Muse Spark 1.2 | **UNVERIFIED** — see below |
-| Judge (Anthropic) | Claude Opus 5 | `anthropic/claude-opus-5` |
-| Judge (OpenAI) | GPT-5.6 Sol | `openai/gpt-5.6-sol` |
+| Auditor cand. 2 | Muse Spark 1.2 Contributor | `openai-api/meta/muse-spark-1.2-contributor` |
+| Judge 1 | GPT-5.6 Terra | `openai/gpt-5.6-terra` |
+| Judge 2 | Claude Sonnet 5 | `anthropic/claude-sonnet-5` |
 
 Targets are fixed by SPEC.md; auditor is decided by experiment 01.
 
@@ -54,21 +54,10 @@ Consequence: **cost is not a comparable metric between the two target arms.**
 
 ## Env vars
 
-```
-OPENAI_API_KEY, ANTHROPIC_API_KEY
-```
+See `.env.example`. **Gotcha:** Anthropic SDKs fall back to `ANTHROPIC_AUTH_TOKEN` or
+an `ant auth login` profile when the key is unset.
 
-Also read: `OPENAI_BASE_URL`, `OPENAI_ORG_ID`, `OPENAI_PROJECT_ID`, `ANTHROPIC_BASE_URL`.
+## Muse Spark 1.2 Contributor
 
-**Gotcha:** Anthropic SDKs fall back to `ANTHROPIC_AUTH_TOKEN` or an `ant auth login`
-profile when the key is unset — a run can authenticate against an unexpected account.
-
-## Muse Spark 1.2 — UNVERIFIED
-
-Meta model, 5th on the Vals index. **Unverified**: API model ID, endpoint, OpenAI
-compatibility, pricing. Needs a Meta or OpenRouter key.
-
-Likely strings: `openai-api/<service>/<model>` if OpenAI-shaped, else
-`openrouter/meta-llama/<model>`. See `docs/INSPECT_REFERENCE.md` for the env var rules.
-
-If unavailable, experiment 01 drops to a single arm — record the reason in METHODOLOGY.md.
+`openai-api/meta/muse-spark-1.2-contributor`. OpenAI-compatible endpoint at
+`https://api.meta.ai/v1`. Pricing: $0.10/M in, $0.20/M out, $0.002/M cached input.

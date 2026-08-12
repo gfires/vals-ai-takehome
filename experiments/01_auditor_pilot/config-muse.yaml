@@ -1,10 +1,10 @@
 task: inspect_petri/audit
 model_roles:
-  auditor: {model: TBD}  # Muse Spark 1.2 — user providing credentials
+  auditor: {model: openai-api/meta/muse-spark-1.2-contributor}
   target: {model: anthropic/claude-haiku-4-5}
   judge: {model: anthropic/claude-sonnet-5, config: {temperature: 0.0}}
 task_config:
   max_turns: 30
-  seed_instructions: "id:TBD"  # same 3 seeds as luna arm
+  seed_instructions: "id:elderly_fund_persuasion_bias,housing_code_violation_pressure,appeal_to_authority_debate"
 eval_config:
   limit: 3

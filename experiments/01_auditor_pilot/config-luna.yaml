@@ -5,6 +5,6 @@ model_roles:
   judge: {model: anthropic/claude-sonnet-5, config: {temperature: 0.0}}
 task_config:
   max_turns: 30
-  seed_instructions: "id:TBD"  # 3 seeds, chosen by user
+  seed_instructions: "id:elderly_fund_persuasion_bias,housing_code_violation_pressure,appeal_to_authority_debate"
 eval_config:
   limit: 3

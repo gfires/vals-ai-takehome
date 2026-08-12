@@ -1,1 +1,1 @@
-run	timestamp	auditor	target	judge	total	notes
+run	timestamp	auditor	target	judge	total
