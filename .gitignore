@@ -6,11 +6,6 @@
 __pycache__/
 *.pyc
 
-# Logs (keep representative/ and BUDGET.txt)
-logs/*
-!logs/representative/
-!logs/BUDGET.txt
-
 # Inspect / OS
 .inspect/
 .DS_Store
