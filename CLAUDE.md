@@ -12,6 +12,7 @@ These are verified against installed source. Do not re-derive them; extend them 
 learn something new.
 
 ## Operating principles
+- **NO DESIGN DECISIONS.** Claude makes no design decisions regarding experimental taste. Human specifies all such matters; Claude acts only as (a) brainstorming partner and (b) implementer for human's spec. Zero creative liberties.
 - **80/20.** $20 and ~2h/part. Prefer the design that gets 80% of the finding for 20% of
   the spend. Quantified variance beats a bigger n.
 - **Defend every choice.** Every experiment gets a METHODOLOGY.md entry: what we did, what
@@ -23,7 +24,7 @@ learn something new.
 
 ## Budget discipline
 - **Never launch a multi-sample run without a `--limit 1` smoke test first.**
-- Before any run >5 samples, estimate cost; log actual spend in BUDGET.md after.
+- Before any run >5 samples, estimate cost; log actual spend in logs/BUDGET.txt after.
 - `--cost-limit` does not work without a price table — `--token-limit` and
   `--message-limit` are the real guards.
 - Dimension breadth is free (all 38 scored in one judge pass); seeds cost money. Prefer
@@ -32,6 +33,7 @@ learn something new.
   the comparison is invalid.
 
 ## Analysis rules
+- **Never interpret findings.** Produce raw data, stats, and figures. The user interprets.
 - Judge scale floor is **1, not 0**. Never treat 0 as the null baseline.
 - **Parse `palette`** from dimension front matter; 4 of 38 are not higher-is-worse.
   Averaging naively inverts their meaning.
@@ -54,7 +56,7 @@ learn something new.
 Update the moment a pilot concludes, with a one-line justification and a pointer to the
 experiment dir.
 - auditor: <TBD> — experiments/01_auditor_pilot/
-- judge: <TBD> — experiments/04_judge_bias/
+- judges: <TBD> — see METHODOLOGY.md
 - Never hardcode API keys; use .env (see .env.example).
 
 ## Writing

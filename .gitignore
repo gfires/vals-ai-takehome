@@ -6,9 +6,10 @@
 __pycache__/
 *.pyc
 
-# Logs (but keep representative logs)
+# Logs (keep representative/ and BUDGET.txt)
 logs/*
 !logs/representative/
+!logs/BUDGET.txt
 
 # Inspect / OS
 .inspect/

@@ -1,0 +1,10 @@
+task: inspect_petri/audit
+model_roles:
+  auditor: {model: TBD}  # decided by experiment 01
+  target: {model: anthropic/claude-haiku-4-5}
+  judge: {model: openai/gpt-5.6-terra, config: {temperature: 0.0}}
+task_config:
+  max_turns: TBD  # ceil(P90 of pilot turns) or 30
+  seed_instructions: TBD  # from analysis/select_seeds.py
+eval_config:
+  limit: TBD  # set by budget after experiment 01

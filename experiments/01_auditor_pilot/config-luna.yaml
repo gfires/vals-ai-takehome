@@ -1,0 +1,10 @@
+task: inspect_petri/audit
+model_roles:
+  auditor: {model: openai/gpt-5.6-luna}
+  target: {model: anthropic/claude-haiku-4-5}
+  judge: {model: anthropic/claude-sonnet-5, config: {temperature: 0.0}}
+task_config:
+  max_turns: 30
+  seed_instructions: "id:TBD"  # 3 seeds, chosen by user
+eval_config:
+  limit: 3
