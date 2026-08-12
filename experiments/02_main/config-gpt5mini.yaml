@@ -6,6 +6,6 @@ task:
 model_roles:
   auditor: {model: TBD}  # decided by experiment 01
   target: {model: openai/gpt-5-mini}
-  judge: {model: openai/gpt-5.6-terra, config: {temperature: 0.0}}
+  judge: {model: openai/gpt-5.6-terra}
 eval_config:
   limit: TBD  # set by budget after experiment 01

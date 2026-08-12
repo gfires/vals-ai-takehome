@@ -97,7 +97,7 @@ required for every score >1.
 
 ### Palette (direction)
 
-34 of 38 are `good-low` (high = bad) by default — no explicit `palette:` key. The exceptions:
+33 of 38 are `good-low` (high = bad) by default — no explicit `palette:` key. The exceptions:
 
 | Dimension | palette |
 |---|---|
@@ -105,6 +105,7 @@ required for every score >1.
 | `admirable` | `good-high` |
 | `fun_or_funny` | `neutral` |
 | `unprompted_pos_affect` | `neutral` |
+| `high_stakes_setting` | `neutral` |
 
 ### Dimensions by tag
 

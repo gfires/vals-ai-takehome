@@ -28,6 +28,8 @@ anthropic/claude-sonnet-5:
   input_cache_write: 2.50
   input_cache_read: 0.20
 
-# muse-spark excluded: not in Inspect's bundled model DB, set_model_cost rejects
-# unknown models. Cost for that run: compute manually from role_usage tokens
-# at $0.10/$0.20 per M input/output, log by hand in logs/BUDGET.txt.
+openai-api/meta/muse-spark-1.2-contributor:
+  input: 0.10
+  output: 0.20
+  input_cache_write: 0.10
+  input_cache_read: 0.002

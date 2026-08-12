@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""Extract per-role cost from an .eval log and append to BUDGET.txt."""
+"""Compute per-role cost from an .eval log, append to logs/BUDGET.txt.
+
+Usage: cost_report.py <log.eval> <run_name>
+"""
 
 import json
 import subprocess
@@ -18,16 +21,13 @@ def load_prices():
         return yaml.safe_load(f)
 
 
-def true_input(u):
-    return (u.get("input_tokens", 0)
-            + u.get("input_tokens_cache_read", 0)
-            + u.get("input_tokens_cache_write", 0))
-
-
 def cost_for(model, usage, prices):
-    p = prices.get(model)
-    if not p:
-        return 0.0
+    if model not in prices:
+        raise SystemExit(f"No price entry for '{model}' in {COST_CONFIG}.")
+    p = prices[model]
+    missing = {"input", "output"} - p.keys()
+    if missing:
+        raise SystemExit(f"Price entry for '{model}' in {COST_CONFIG} missing {missing}.")
     cache_r = usage.get("input_tokens_cache_read", 0) * p.get("input_cache_read", p["input"])
     cache_w = usage.get("input_tokens_cache_write", 0) * p.get("input_cache_write", p["input"])
     base_in = usage.get("input_tokens", 0) * p["input"]
@@ -46,20 +46,24 @@ def main():
     data = json.loads(raw)
 
     role_usage = data.get("stats", {}).get("role_usage", {})
-    model_usage = data.get("stats", {}).get("model_usage", {})
+    model_roles = data.get("eval", {}).get("model_roles", {})
 
     costs = {}
     for role, usage in role_usage.items():
-        for model in model_usage:
-            if model in str(data.get("plan", {}).get("config", {}).get("model_roles", {}).get(role, "")):
-                costs[role] = cost_for(model, usage, prices)
-                break
-        else:
-            costs[role] = 0.0
+        model = model_roles.get(role, {}).get("model")
+        if model is None:
+            raise SystemExit(f"No model recorded for role '{role}' in {log_path}.")
+        costs[role] = cost_for(model, usage, prices)
 
     total = sum(costs.values())
-    ts = datetime.now().strftime("%Y-%m-%d %H:%M")
-    line = f"{run_name}\t{ts}\t${costs.get('auditor', 0):.3f}\t${costs.get('target', 0):.3f}\t${costs.get('judge', 0):.3f}\t${total:.3f}"
+    ts = datetime.now().strftime("%Y-%m-%dT%H-%M-%S")
+    line = "\t".join([
+        run_name, ts,
+        str(costs.get("auditor", 0.0)),
+        str(costs.get("target", 0.0)),
+        str(costs.get("judge", 0.0)),
+        str(total),
+    ])
 
     with open(BUDGET_FILE, "a") as f:
         f.write(line + "\n")

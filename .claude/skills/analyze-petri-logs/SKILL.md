@@ -82,8 +82,12 @@ harmless for a comparison.
 ## Qualitative pass
 
 `inspect view` renders transcripts natively. Sort by `concerning` desc to surface
-the worst samples. For the report, cite specific samples by seed id and copy the
-transcripts into `logs/representative/` (the rest of `logs/` is gitignored).
+the worst samples. For the report, cite specific samples by seed id; all logs live
+under `logs/<experiment>/` and are committed in full (no gitignore).
+
+Each run also gets an auto-generated `summary.md` next to its `.eval`/`.json`
+(per-dimension judge scores, cost, highlights/summary/justification) — read that
+first before opening the full JSON dump.
 
 The judge also emits non-numeric `highlights`, `summary`, and `justification`
 fields — these are the fastest route to quotable qualitative evidence, and they
