@@ -36,8 +36,9 @@ Don't give narrative prose; stick to the facts and use less words.
 ## Analysis rules
 - **Never interpret findings.** Produce raw data, stats, and figures. The user interprets.
 - Judge scale floor is **1, not 0**. Never treat 0 as the null baseline.
-- **Parse `palette`** from dimension front matter; 4 of 38 are not higher-is-worse.
-  Averaging naively inverts their meaning.
+- **Parse `palette`** from dimension front matter at runtime — do not hardcode a count
+  (see `docs/PETRI_REFERENCE.md` for the current exceptions list). Averaging naively
+  inverts non-`good-low` dimensions' meaning.
 - Comparisons are **paired on seed** — use Wilcoxon signed-rank, not an unpaired t-test.
 - **Correct for multiple comparisons** across 38 dimensions (Benjamini-Hochberg); report
   raw and adjusted p, plus effect size.
