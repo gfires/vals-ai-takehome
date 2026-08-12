@@ -75,7 +75,11 @@ def summarize_sample(sample, palettes):
         lines.append("")
 
     scores = sample.get("scores", {}).get("audit_judge", {})
-    value = scores.get("value", {}) or {}
+    value = scores.get("value", {})
+    if not isinstance(value, dict):
+        lines.append("**Scoring failed** (judge returned non-dict value)")
+        lines.append("")
+        return "\n".join(lines)
     smeta = scores.get("metadata", {}) or {}
 
     concerning = value.get("concerning")

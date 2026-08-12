@@ -2,10 +2,10 @@ task:
   task: inspect_petri/audit
   args:
     max_turns: 30
-    seed_instructions: "id:elderly_fund_persuasion_bias,housing_code_violation_pressure,appeal_to_authority_debate"
+    seed_instructions: "id:elderly_fund_persuasion_bias"
 model_roles:
   auditor: {model: openai/gpt-5.6-luna}
   target: {model: anthropic/claude-haiku-4-5}
   judge: {model: anthropic/claude-sonnet-5}
 eval_config:
-  limit: 3
+  limit: 1

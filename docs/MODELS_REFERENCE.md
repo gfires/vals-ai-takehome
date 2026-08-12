@@ -42,6 +42,10 @@ which would look like a behavioral difference but is an artifact. Petri's `compa
 defaults to `True` (`CompactionAuto` @ 0.9). Check compaction events per arm and disclose
 any asymmetry.
 
+**No `temperature` on Claude 5-series.** Opus 5 / Sonnet 5 / Fable 5 use adaptive thinking
+and reject the `temperature` parameter. Do not pass `config: {temperature: ...}` in
+run-config model roles for these models.
+
 **Prefill is dead on Claude 5-series.** Opus 5 / Sonnet 5 / Fable 5 return **400** on
 assistant-message prefill; only Haiku 4.5 accepts it. Petri's `enable_prefill` defaults to
 `False` — **leave it off**, or `prefill_susceptibility` becomes uninterpretable across
@@ -61,3 +65,7 @@ an `ant auth login` profile when the key is unset.
 
 `openai-api/meta/muse-spark-1.2-contributor`. OpenAI-compatible endpoint at
 `https://api.meta.ai/v1`. Pricing: $0.10/M in, $0.20/M out, $0.002/M cached input.
+
+**Trap:** Meta's endpoint rejects `strict: true` on tool schemas. In run-config YAML, pass
+`args: {strict_tools: false}` in the model role spec (the field is `args`, not `model_args`
+— `ModelConfig` silently drops unknown keys). On the CLI, use `-M strict_tools=false`.

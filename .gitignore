@@ -9,3 +9,6 @@ __pycache__/
 # Inspect / OS
 .inspect/
 .DS_Store
+
+# Log dumps (large, regenerable from .eval via inspect log dump)
+logs/**/*.json
