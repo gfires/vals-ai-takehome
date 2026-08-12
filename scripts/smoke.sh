@@ -2,11 +2,17 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
+debug_flags=()
+if [ "${DEBUG:-0}" = "1" ]; then
+  debug_flags=(--log-level trace --display plain)
+fi
+
 inspect eval inspect_petri/audit \
   --run-config experiments/00_smoke/config.yaml \
   --log-dir logs/smoke \
   --model-cost-config config/model_costs.yaml \
-  --adaptive-connections false
+  --adaptive-connections false \
+  "${debug_flags[@]}"
 
 echo "--- role_usage ---"
 latest=$(ls -t logs/smoke/*.eval 2>/dev/null | head -1)

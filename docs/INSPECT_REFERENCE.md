@@ -31,13 +31,17 @@ share a model.
 Schema `RunConfigInput` (`_cli/eval.py:299`). CLI flags override file values. Incompatible
 with `--generate-config`, `--task-config`, `--solver-config`.
 
+Schema has no top-level `task_config` key (confirmed against installed
+`RunConfigInput.model_json_schema()`). Task params go under `task.args`:
+
 ```yaml
-task: inspect_petri/audit
+task:
+  task: inspect_petri/audit
+  args: {max_turns: 30}
 model_roles:
   auditor: {model: openai/gpt-5.6-luna}
   target:  {model: openai/gpt-5-mini}
   judge:   {model: anthropic/claude-opus-5, config: {temperature: 0.0}}
-task_config: {max_turns: 30}
 eval_config: {limit: 5}
 ```
 
