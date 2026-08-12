@@ -13,7 +13,7 @@ inspect eval inspect_petri/audit \
   --run-config experiments/00_smoke/config.yaml \
   --log-dir "$log_dir" \
   --adaptive-connections false \
-  "${debug_flags[@]}"
+  ${debug_flags[@]+"${debug_flags[@]}"}
 
 latest=$(ls -t "$log_dir"/*.eval 2>/dev/null | head -1)
 if [ -n "$latest" ]; then
