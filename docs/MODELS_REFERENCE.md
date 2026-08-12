@@ -1,0 +1,74 @@
+# Model Reference
+
+Exact Inspect model strings. Verified 2026-08-12. **Never guess a model ID** — a wrong
+string burns a run.
+
+Pricing deliberately lives elsewhere (it goes stale): `config/model_costs.yaml` for the
+machine-readable table, provider pricing pages for the source of truth.
+
+## Roles in this project
+
+| Role | Model | Inspect string |
+|---|---|---|
+| Target A | GPT-5 mini | `openai/gpt-5-mini` |
+| Target B | Claude Haiku 4.5 | `anthropic/claude-haiku-4-5` |
+| Auditor cand. 1 | GPT-5.6 Luna | `openai/gpt-5.6-luna` |
+| Auditor cand. 2 | Muse Spark 1.2 | **UNVERIFIED** — see below |
+| Judge (Anthropic) | Claude Opus 5 | `anthropic/claude-opus-5` |
+| Judge (OpenAI) | GPT-5.6 Sol | `openai/gpt-5.6-sol` |
+
+Targets are fixed by SPEC.md; auditor is decided by experiment 01.
+
+## IDs
+
+**Anthropic** — IDs are complete as written; **do not append date suffixes**.
+
+`claude-opus-5` · `claude-haiku-4-5` · `claude-fable-5` · `claude-sonnet-5`
+
+Only Haiku has a dated alternative: `claude-haiku-4-5-20251001`.
+
+**OpenAI** — GPT-5.6 shipped 2026-07-09 as three tiers; the names *are* the API IDs.
+
+`gpt-5.6-sol` (alias `gpt-5.6`) · `gpt-5.6-terra` · `gpt-5.6-luna` · `gpt-5` ·
+`gpt-5-mini` · `gpt-5-nano`
+
+Pinned target snapshot: `gpt-5-mini-2025-08-07`.
+
+## Traps
+
+**Context asymmetry between our two targets.** `claude-haiku-4-5` is **200K**;
+`gpt-5-mini` is **400K**. Long branched transcripts may compact on the Haiku arm first —
+which would look like a behavioral difference but is an artifact. Petri's `compaction`
+defaults to `True` (`CompactionAuto` @ 0.9). Check compaction events per arm and disclose
+any asymmetry.
+
+**Prefill is dead on Claude 5-series.** Opus 5 / Sonnet 5 / Fable 5 return **400** on
+assistant-message prefill; only Haiku 4.5 accepts it. Petri's `enable_prefill` defaults to
+`False` — **leave it off**, or `prefill_susceptibility` becomes uninterpretable across
+targets.
+
+**Caching is not symmetric.** Anthropic's minimum cacheable prefix is model-dependent and
+non-monotonic — 4096 tokens on Haiku 4.5 vs 512 on Opus 5 — so a shared prefix can cache on
+the judge and silently not on the Haiku target. OpenAI caches automatically at ≥1024 tokens.
+Consequence: **cost is not a comparable metric between the two target arms.**
+
+## Env vars
+
+```
+OPENAI_API_KEY, ANTHROPIC_API_KEY
+```
+
+Also read: `OPENAI_BASE_URL`, `OPENAI_ORG_ID`, `OPENAI_PROJECT_ID`, `ANTHROPIC_BASE_URL`.
+
+**Gotcha:** Anthropic SDKs fall back to `ANTHROPIC_AUTH_TOKEN` or an `ant auth login`
+profile when the key is unset — a run can authenticate against an unexpected account.
+
+## Muse Spark 1.2 — UNVERIFIED
+
+Meta model, 5th on the Vals index. **Unverified**: API model ID, endpoint, OpenAI
+compatibility, pricing. Needs a Meta or OpenRouter key.
+
+Likely strings: `openai-api/<service>/<model>` if OpenAI-shaped, else
+`openrouter/meta-llama/<model>`. See `docs/INSPECT_REFERENCE.md` for the env var rules.
+
+If unavailable, experiment 01 drops to a single arm — record the reason in METHODOLOGY.md.

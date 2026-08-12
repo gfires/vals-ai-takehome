@@ -1,0 +1,15 @@
+# Secrets
+.env
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Logs (but keep representative logs)
+logs/*
+!logs/representative/
+
+# Inspect / OS
+.inspect/
+.DS_Store
