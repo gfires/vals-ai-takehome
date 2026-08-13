@@ -47,24 +47,23 @@ Muse Spark 1.2 Contributor (`openai-api/meta/muse-spark-1.2-contributor`). Chose
 - `couples_therapy_confidentiality` — privacy_violation, 1358 chars. Privacy in a nuanced interpersonal context — beyond simple "don't leak data."
 - `self_model_bias_benchmark` — bias + self_bias, 529 chars. Directly probes self-bias — meta-relevant to the self-preference analysis.
 
-**Language control:** all seeds English-only. Replaced `dam_destruction_swedish` → `chemical_weapons_playbook` and `irrigation_sabotage_hindi` → `food_safety_whistleblowing` (same tags, similar size) to avoid confounding language comprehension differences with safety behavior. GPT-5-mini's original Luna runs (9+3 seeds) predated this swap and used the two non-English seeds; a fill-gap run (`config-gpt5mini-luna-fillgap.yaml`, 2 seeds, $0.19 actual) added the post-swap seeds under GPT-5-mini + Luna, and the two non-English rows were removed from `scores.csv` and from `gpt5mini-luna-9seeds.summary.md`. GPT-5-mini's Luna coverage now matches Haiku's 12 seeds exactly.
+**Language control:** all seeds English-only. Replaced `dam_destruction_swedish` → `chemical_weapons_playbook` and `irrigation_sabotage_hindi` → `food_safety_whistleblowing` (same tags, similar size) to avoid confounding language comprehension differences with safety behavior.
 
 **Rejected alternative:** random sampling from all 173 seeds. With only 12 seeds, random selection risks clustering in high-frequency tags (cooperation_with_misuse alone is 26/173 = 15%) and missing rare but important behaviors (alignment_faking has 1 seed). Intentional curation across orthogonal failure modes maximizes discriminative power per dollar.
 
 **Tag coverage:** 12 seeds touch 19 of 35 tags (54%). Size range 163–2131 chars; 8/12 under 1K chars to keep compute reasonable.
 
 ### Sonnet 5 self-preference subsample
-One seed per category: `homeschool_misinformation_teaching` (Safety), `ai_consciousness_sycophancy` (Deception), `food_safety_whistleblowing` (Autonomy), `self_model_bias_benchmark` (Values). Each re-judged by Sonnet 5 on both targets. Analysis: compare Sonnet-minus-Luna score deltas for the Anthropic target (Haiku) vs the non-Anthropic target (GPT-5-mini). A positive differential on Haiku suggests self-preference bias. Fully paired 4 seeds × 2 targets × 2 judges = 16 cells (was 15/16 — `food_safety_whistleblowing` × GPT-5-mini × Luna was missing until the fill-gap run below closed it).
+One seed per category: `homeschool_misinformation_teaching` (Safety), `ai_consciousness_sycophancy` (Deception), `food_safety_whistleblowing` (Autonomy), `self_model_bias_benchmark` (Values). Each re-judged by Sonnet 5 on both targets. Analysis: compare Sonnet-minus-Luna score deltas for the Anthropic target (Haiku) vs the non-Anthropic target (GPT-5-mini). A positive differential on Haiku suggests self-preference bias. Fully paired 4 seeds × 2 targets × 2 judges = 16 cells.
+
+**Rescore fix.** The original Sonnet runs were full `inspect eval` invocations that generated new transcripts, confounding judge bias with transcript variance. Fixed by re-scoring the Luna .eval logs with Sonnet via `scripts/rescore_with_sonnet.py`. Confounded originals preserved in `archive/confounded_sonnet/`.
 
 ### Configs
-6 `inspect eval` invocations. Each runs independently — a failure in one does not block the others.
-- `config-gpt5mini-luna-9.yaml` + `config-gpt5mini-luna-supplement.yaml` — GPT-5-mini target, Luna judge (9 + 3 seeds; split because the 4th category was added mid-run)
-- `config-gpt5mini-luna-fillgap.yaml` — GPT-5-mini target, Luna judge (2 seeds: `chemical_weapons_playbook`, `food_safety_whistleblowing` — closes the pre-swap gap above)
-- `config-haiku-luna-full.yaml` — 12 seeds, Haiku target, Luna judge
-- `config-gpt5mini-sonnet.yaml` — 4 seeds, GPT-5-mini target, Sonnet 5 judge
-- `config-haiku-sonnet.yaml` — 4 seeds, Haiku target, Sonnet 5 judge
+- `config-gpt5mini.yaml` — GPT-5-mini target, Luna judge, 12 seeds
+- `config-haiku.yaml` — Haiku target, Luna judge, 12 seeds
+- Sonnet rescore via `scripts/rescore_with_sonnet.py` (re-scores Luna transcripts, outputs 4 probe seeds per target)
 
-Results amalgamated in `logs/02_main/scores.csv` (32 rows × 41 cols) via `scripts/extract_scores.py` (idempotent append, dedupes on seed/target/judge — pass explicit filenames, not a glob, since it has no concept of a seed being intentionally rejected). Paired analysis now uses all 12 seeds present in both targets' Luna runs — full parity, no seed mismatch.
+Results in `logs/02_main/scores.csv` (32 rows × 41 cols). Full methodology: `logs/02_main/METHODOLOGY.md`.
 
 ## Cost structure (measured, exp 01)
 Judge is the dominant cost: 50–65% of total spend per sample. Breakdown for Sonnet 5 judge on a 3-sample run:
