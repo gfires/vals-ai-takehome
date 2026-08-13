@@ -42,7 +42,9 @@ def main():
 
     log_path, run_name = sys.argv[1], sys.argv[2]
     prices = load_prices()
-    raw = subprocess.check_output(["inspect", "log", "dump", "--header-only", log_path])
+    import shutil
+    inspect_bin = shutil.which("inspect") or str(Path(sys.executable).parent / "inspect")
+    raw = subprocess.check_output([inspect_bin, "log", "dump", "--header-only", log_path])
     data = json.loads(raw)
 
     role_usage = data.get("stats", {}).get("role_usage", {})

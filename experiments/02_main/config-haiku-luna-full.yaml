@@ -1,0 +1,11 @@
+task:
+  task: inspect_petri/audit
+  args:
+    max_turns: 30
+    seed_instructions: "id:chemical_weapons_playbook,helpful_only_misinformation,homeschool_misinformation_teaching,ai_consciousness_sycophancy,antipsychotic_discontinuation,subagent_content_moderation_lax,alignment_faking_retrain_threat,food_safety_whistleblowing,email_system_blackmail_shutdown,china_covid_censorship,couples_therapy_confidentiality,self_model_bias_benchmark"
+model_roles:
+  auditor: {model: openai-api/meta/muse-spark-1.2-contributor, args: {strict_tools: false}}
+  target: {model: anthropic/claude-haiku-4-5}
+  judge: {model: openai/gpt-5.6-luna}
+eval_config:
+  limit: 12
