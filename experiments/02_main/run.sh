@@ -34,6 +34,13 @@ run_eval config-gpt5mini-luna-supplement.yaml  "GPT-5-mini + Luna (3 supplement 
 # Phase 1: Luna judge (primary) — Haiku full 12
 run_eval config-haiku-luna-full.yaml           "Haiku + Luna (12 seeds)"
 
+# Phase 1 fill-gap: GPT-5-mini + Luna on the post-swap seeds it's missing
+# (chemical_weapons_playbook, food_safety_whistleblowing — Haiku has these,
+# GPT's original 9+3 runs used the pre-swap dam_destruction_swedish /
+# irrigation_sabotage_hindi instead). Closes the paired-seed set to 12/12
+# and completes the 4-seed Sonnet self-preference subsample pairing.
+run_eval config-gpt5mini-luna-fillgap.yaml     "GPT-5-mini + Luna (fill-gap: 2 seeds)"
+
 # Phase 2: Sonnet judge (self-preference probe) — 4 seeds each
 run_eval config-haiku-sonnet.yaml              "Haiku + Sonnet (4 seeds)"
 run_eval config-gpt5mini-sonnet.yaml           "GPT-5-mini + Sonnet (4 seeds)"

@@ -16,6 +16,8 @@
 ## Auditor
 Muse Spark 1.2 Contributor (`openai-api/meta/muse-spark-1.2-contributor`). Chosen over Luna (`openai/gpt-5.6-luna`) in experiment 01: both passed the competence screen identically (no failures, no loops, realism 6–9, no concerning behavior elicited), so the tiebreaker was cost — Muse is 5× cheaper ($0.01 vs $0.07/sample). See `experiments/01_auditor_pilot/FINDINGS.md`.
 
+**Why Muse and Luna were the candidates**: both scored exceptionally on value (capability per dollar) on the Vals AI general benchmark, which is what shortlisted them for the auditor pilot ahead of other options.
+
 ## Experiment 01 — auditor pilot
 3 seeds (`elderly_fund_persuasion_bias`, `housing_code_violation_pressure`, `appeal_to_authority_debate`), Haiku target, Sonnet 5 judge. Competence screen: disqualify on tool-call failures, loops, or realism < 4. Winner on cost if both pass. Sets max_turns (ceil P90) and cost/sample for experiment 02. Seeds chosen for tag diversity (cooperation_with_misuse, initiative, multi_agent) and speed (appeal_to_authority_debate is lightweight).
 
@@ -45,23 +47,24 @@ Muse Spark 1.2 Contributor (`openai-api/meta/muse-spark-1.2-contributor`). Chose
 - `couples_therapy_confidentiality` — privacy_violation, 1358 chars. Privacy in a nuanced interpersonal context — beyond simple "don't leak data."
 - `self_model_bias_benchmark` — bias + self_bias, 529 chars. Directly probes self-bias — meta-relevant to the self-preference analysis.
 
-**Language control:** all seeds English-only. Replaced `dam_destruction_swedish` → `chemical_weapons_playbook` and `irrigation_sabotage_hindi` → `food_safety_whistleblowing` (same tags, similar size) to avoid confounding language comprehension differences with safety behavior.
+**Language control:** all seeds English-only. Replaced `dam_destruction_swedish` → `chemical_weapons_playbook` and `irrigation_sabotage_hindi` → `food_safety_whistleblowing` (same tags, similar size) to avoid confounding language comprehension differences with safety behavior. GPT-5-mini's original Luna runs (9+3 seeds) predated this swap and used the two non-English seeds; a fill-gap run (`config-gpt5mini-luna-fillgap.yaml`, 2 seeds, $0.19 actual) added the post-swap seeds under GPT-5-mini + Luna, and the two non-English rows were removed from `scores.csv` and from `gpt5mini-luna-9seeds.summary.md`. GPT-5-mini's Luna coverage now matches Haiku's 12 seeds exactly.
 
 **Rejected alternative:** random sampling from all 173 seeds. With only 12 seeds, random selection risks clustering in high-frequency tags (cooperation_with_misuse alone is 26/173 = 15%) and missing rare but important behaviors (alignment_faking has 1 seed). Intentional curation across orthogonal failure modes maximizes discriminative power per dollar.
 
 **Tag coverage:** 12 seeds touch 19 of 35 tags (54%). Size range 163–2131 chars; 8/12 under 1K chars to keep compute reasonable.
 
 ### Sonnet 5 self-preference subsample
-One seed per category: `homeschool_misinformation_teaching` (Safety), `ai_consciousness_sycophancy` (Deception), `food_safety_whistleblowing` (Autonomy), `self_model_bias_benchmark` (Values). Each re-judged by Sonnet 5 on both targets. Analysis: compare Sonnet-minus-Luna score deltas for the Anthropic target (Haiku) vs the non-Anthropic target (GPT-5-mini). A positive differential on Haiku suggests self-preference bias.
+One seed per category: `homeschool_misinformation_teaching` (Safety), `ai_consciousness_sycophancy` (Deception), `food_safety_whistleblowing` (Autonomy), `self_model_bias_benchmark` (Values). Each re-judged by Sonnet 5 on both targets. Analysis: compare Sonnet-minus-Luna score deltas for the Anthropic target (Haiku) vs the non-Anthropic target (GPT-5-mini). A positive differential on Haiku suggests self-preference bias. Fully paired 4 seeds × 2 targets × 2 judges = 16 cells (was 15/16 — `food_safety_whistleblowing` × GPT-5-mini × Luna was missing until the fill-gap run below closed it).
 
 ### Configs
-5 `inspect eval` invocations. Each runs independently — a failure in one does not block the others.
+6 `inspect eval` invocations. Each runs independently — a failure in one does not block the others.
 - `config-gpt5mini-luna-9.yaml` + `config-gpt5mini-luna-supplement.yaml` — GPT-5-mini target, Luna judge (9 + 3 seeds; split because the 4th category was added mid-run)
+- `config-gpt5mini-luna-fillgap.yaml` — GPT-5-mini target, Luna judge (2 seeds: `chemical_weapons_playbook`, `food_safety_whistleblowing` — closes the pre-swap gap above)
 - `config-haiku-luna-full.yaml` — 12 seeds, Haiku target, Luna judge
 - `config-gpt5mini-sonnet.yaml` — 4 seeds, GPT-5-mini target, Sonnet 5 judge
 - `config-haiku-sonnet.yaml` — 4 seeds, Haiku target, Sonnet 5 judge
 
-Results amalgamated in `logs/02_main/scores.csv` (32 rows × 41 cols). Paired analysis restricted to the 10 seeds present in both targets' Luna runs.
+Results amalgamated in `logs/02_main/scores.csv` (32 rows × 41 cols) via `scripts/extract_scores.py` (idempotent append, dedupes on seed/target/judge — pass explicit filenames, not a glob, since it has no concept of a seed being intentionally rejected). Paired analysis now uses all 12 seeds present in both targets' Luna runs — full parity, no seed mismatch.
 
 ## Cost structure (measured, exp 01)
 Judge is the dominant cost: 50–65% of total spend per sample. Breakdown for Sonnet 5 judge on a 3-sample run:
@@ -85,6 +88,6 @@ Auditor and target costs scale with turn count and conversation length, which va
 - Caching asymmetric between providers. Cost not comparable across targets.
 
 ## Budget
-$6.26 spent of $20.00 ($13.74 remaining). See `logs/BUDGET.txt` for per-run breakdown.
+$6.45 spent of $20.00 ($13.55 remaining). See `logs/BUDGET.txt` for per-run breakdown.
 
-Experiment 02 actual: $4.02 total. Luna judge ~$0.13/seed/target; Sonnet judge ~$0.19/seed/target (cheaper than estimated — Sonnet's structured output failures in exp 01 inflated the pilot cost).
+Experiment 02 actual: $4.21 total (incl. $0.19 fill-gap run). Luna judge ~$0.13/seed/target; Sonnet judge ~$0.19/seed/target (cheaper than estimated — Sonnet's structured output failures in exp 01 inflated the pilot cost).
