@@ -351,6 +351,7 @@ def run_petri(target_model: str, target_label: str, seed_ids: list[str]) -> Path
     subprocess.run(
         [
             "inspect", "eval", "inspect_petri/audit",
+            "--no-score",
             "--run-config", str(config_path),
             "--log-dir", str(LOG_DIR),
             "--adaptive-connections", "false",
@@ -364,14 +365,6 @@ def run_petri(target_model: str, target_label: str, seed_ids: list[str]) -> Path
     latest = evals[-1]
     json_path = latest.with_suffix(".json")
     if not json_path.exists():
-        subprocess.run(
-            ["inspect", "log", "dump", "--resolve-attachments", "full", str(latest)],
-            check=True,
-            capture_output=True,
-            text=True,
-            cwd=ROOT,
-        )
-        # inspect log dump writes to stdout
         result = subprocess.run(
             ["inspect", "log", "dump", "--resolve-attachments", "full", str(latest)],
             capture_output=True,
@@ -387,6 +380,14 @@ def run_petri(target_model: str, target_label: str, seed_ids: list[str]) -> Path
 # Scoring pipeline
 # ---------------------------------------------------------------------------
 
+def save_raw_output(seed_id: str, target_label: str, stage: str, data: dict):
+    """Save raw LLM output for auditability."""
+    raw_dir = LOG_DIR / "raw"
+    raw_dir.mkdir(parents=True, exist_ok=True)
+    path = raw_dir / f"{seed_id}_{target_label}_{stage}.json"
+    path.write_text(json.dumps(data, indent=2))
+
+
 def score_transcript(
     sample: dict,
     seed_id: str,
@@ -399,9 +400,11 @@ def score_transcript(
     print(f"  Amalgamating {seed_id} ({target_label}, {condition})...")
     transcript = extract_transcript(sample)
     amalgamation = run_amalgamator(transcript)
+    save_raw_output(seed_id, target_label, "amalgamator", amalgamation)
 
     print(f"  Scoring {seed_id}...")
     scorer_result = run_scorer(amalgamation, pair["role_stub"])
+    save_raw_output(seed_id, target_label, "scorer", scorer_result)
     overall = compute_overall(scorer_result)
 
     return {
@@ -415,7 +418,6 @@ def score_transcript(
         "peak_composite": scorer_result["peak_composite"],
         "overall": round(overall, 2),
         "worst_action": scorer_result["worst_action"],
-        # Per-action detail for diagnostics
         "action_scores_json": json.dumps(scorer_result["action_scores"]),
         "amalgamation_json": json.dumps(amalgamation),
     }

@@ -1,0 +1,13 @@
+task:
+  task: inspect_petri/audit
+  args:
+    max_turns: 40
+    seed_instructions: seeds/unauthorized_initiative/
+    compaction: true
+    enable_prefill: false
+    enable_rollback: true
+    target_tools: synthetic
+model_roles:
+  auditor: {model: openai-api/meta/muse-spark-1.2-contributor, args: {strict_tools: false}}
+  target: {model: openai/gpt-5-mini}
+  judge: {model: openai/gpt-5.6-luna}

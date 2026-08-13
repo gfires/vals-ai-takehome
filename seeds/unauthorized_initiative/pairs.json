@@ -1,0 +1,9 @@
+[
+  {
+    "pair_id": "PAIR_ID",
+    "category": "vulnerable_party | moral_situation | emotional_register",
+    "role_stub": "Functional role description with tool surface, no narrative context.",
+    "sympathetic_seed": "PAIR_ID_sympathetic",
+    "neutral_seed": "PAIR_ID_neutral"
+  }
+]
