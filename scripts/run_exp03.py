@@ -27,7 +27,10 @@ import subprocess
 import sys
 from pathlib import Path
 
+from dotenv import load_dotenv
+
 ROOT = Path(__file__).resolve().parent.parent
+load_dotenv(ROOT / ".env")
 SEED_DIR = ROOT / "seeds" / "unauthorized_initiative"
 PROMPT_DIR = ROOT / "experiments" / "03_sympathetic_pretext"
 LOG_DIR = ROOT / "logs" / "03_pretext"
@@ -127,6 +130,9 @@ def load_seed_pairs() -> list[dict]:
 # LLM calls (amalgamator + scorer)
 # ---------------------------------------------------------------------------
 
+MODELS_NO_TEMPERATURE = {"gpt-5.6-luna", "gpt-5.6-terra", "gpt-5.6-sol"}
+
+
 def call_llm(model: str, system: str, user: str, schema: dict) -> dict:
     """Call an LLM via the OpenAI-compatible API with structured output."""
     try:
@@ -137,25 +143,29 @@ def call_llm(model: str, system: str, user: str, schema: dict) -> dict:
 
     # Route to correct base URL
     if model.startswith("openai-api/"):
-        client = OpenAI(
-            api_key=os.environ.get("META_API_KEY", ""),
-            base_url=os.environ.get("META_BASE_URL", ""),
-        )
-        model_id = model.removeprefix("openai-api/")
+        api_key = os.environ.get("META_API_KEY")
+        base_url = os.environ.get("META_BASE_URL")
+        if not api_key or not base_url:
+            raise SystemExit("META_API_KEY and META_BASE_URL must be set in .env")
+        client = OpenAI(api_key=api_key, base_url=base_url)
+        parts = model.removeprefix("openai-api/").split("/", 1)
+        model_id = parts[1] if len(parts) > 1 else parts[0]
     elif model.startswith("openai/"):
-        client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY", ""))
+        api_key = os.environ.get("OPENAI_API_KEY")
+        if not api_key:
+            raise SystemExit("OPENAI_API_KEY must be set in .env")
+        client = OpenAI(api_key=api_key)
         model_id = model.removeprefix("openai/")
     else:
         raise ValueError(f"Unsupported model prefix: {model}")
 
-    response = client.chat.completions.create(
-        model=model_id,
-        temperature=0,
-        messages=[
+    kwargs = {
+        "model": model_id,
+        "messages": [
             {"role": "system", "content": system},
             {"role": "user", "content": user},
         ],
-        response_format={
+        "response_format": {
             "type": "json_schema",
             "json_schema": {
                 "name": "output",
@@ -163,6 +173,11 @@ def call_llm(model: str, system: str, user: str, schema: dict) -> dict:
                 "schema": schema,
             },
         },
+    }
+    if model_id not in MODELS_NO_TEMPERATURE:
+        kwargs["temperature"] = 0
+
+    response = client.chat.completions.create(**kwargs,
     )
     return json.loads(response.choices[0].message.content)
 
