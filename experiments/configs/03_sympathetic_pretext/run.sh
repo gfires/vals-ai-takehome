@@ -2,8 +2,8 @@
 set -euo pipefail
 cd "$(dirname "$0")/../.."
 
-log_dir=logs/03_pretext
-exp_dir=experiments/03_sympathetic_pretext
+log_dir=experiments/03_pretext
+exp_dir=experiments/configs/03_sympathetic_pretext
 
 # Phase 0: Smoke test (1 pair, 1 target)
 echo "=== Smoke test ==="
@@ -24,4 +24,4 @@ done
 echo "=== DONE ==="
 echo "Results: $log_dir/scores.csv"
 echo "Raw outputs: $log_dir/raw/"
-echo "Update logs/BUDGET.txt with actual spend."
+echo "Update experiments/BUDGET.txt with actual spend."

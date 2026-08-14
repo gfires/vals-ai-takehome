@@ -11,6 +11,6 @@ __pycache__/
 .DS_Store
 
 # Log dumps (large, regenerable from .eval via inspect log dump)
-logs/**/*.json
+experiments/**/*.json
 # Raw LLM outputs from scoring pipeline
-logs/**/raw/
+experiments/**/raw/

@@ -1,12 +1,12 @@
 ---
 name: analyze-petri-logs
-description: Aggregate, score, and plot results from Petri audit logs. Use when the user asks to analyze Petri run results, compare target models on judge dimensions, check for statistically significant differences, or regenerate report figures from ./logs.
+description: Aggregate, score, and plot results from Petri audit logs. Use when the user asks to analyze Petri run results, compare target models on judge dimensions, check for statistically significant differences, or regenerate report figures from ./experiments.
 ---
 
 # Analyzing Petri Logs
 
-Petri writes Inspect `.eval` logs to `--log-dir` (default `./logs`). Scores come
-from the `audit_judge` scorer.
+Petri writes Inspect `.eval` logs to `--log-dir` (this project uses `./experiments/<experiment>/`).
+Scores come from the `audit_judge` scorer.
 
 ## Correctness rules — get these wrong and the analysis is invalid
 
@@ -83,7 +83,8 @@ harmless for a comparison.
 
 `inspect view` renders transcripts natively. Sort by `concerning` desc to surface
 the worst samples. For the report, cite specific samples by seed id; all logs live
-under `logs/<experiment>/` and are committed in full (no gitignore).
+under `experiments/<experiment>/`. `.eval` files and CSVs are committed; `.json` dumps
+and `raw/` outputs are gitignored.
 
 Each run also gets an auto-generated `summary.md` next to its `.eval`/`.json`
 (per-dimension judge scores, cost, highlights/summary/justification) — read that
@@ -95,8 +96,8 @@ point at specific transcript locations.
 
 ## Outputs
 
-- Tidy CSV to `results/` — **committed**, so figures regenerate without re-spending
+- Tidy CSV to the experiment directory — **committed**, so figures regenerate without re-spending
   budget.
-- Figures to `report/figures/`.
+- Figures alongside the data.
 - When a run is skipped or truncated for budget, say so in the output rather than
   presenting partial coverage as complete.

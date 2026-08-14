@@ -25,7 +25,7 @@ Don't give narrative prose; stick to the facts and use less words.
 
 ## Budget discipline
 - **Never launch a multi-sample run without a `--limit 1` smoke test first.**
-- Before any run >5 samples, estimate cost; log actual spend in logs/BUDGET.txt after.
+- Before any run >5 samples, estimate cost; log actual spend in experiments/BUDGET.txt after.
 - `--cost-limit` does not work without a price table — `--token-limit` and
   `--message-limit` are the real guards.
 - Dimension breadth is free (all 38 scored in one judge pass); seeds cost money. Prefer
@@ -45,23 +45,17 @@ Don't give narrative prose; stick to the facts and use less words.
 - Per-tag slices (~3 seeds) are underpowered — directional only, never "significant".
 
 ## Conventions
-- One directory per decision: `experiments/NN_name/` with the run config, `run.sh`, and
-  `FINDINGS.md`. Traceability comes from this layout, not from prose.
+- One directory per experiment under `experiments/`. Configs and run scripts in
+  `experiments/configs/NN_name/`; outputs, scores, and findings alongside the `.eval` logs
+  in `experiments/NN_name/`.
 - Invoke via committed `--run-config` YAML, not ad-hoc CLI flags — the config is the record.
 - Custom seeds in `seeds/<behavior>/`; custom judge dimensions in `dimensions/`.
 - Results CSVs are **committed**; figures must regenerate without re-spending budget.
-- Raw logs gitignored except a curated set in `logs/representative/`.
+- Raw logs (JSON dumps, LLM outputs) are gitignored; `.eval` files and CSVs are committed.
 - Commits are narrative: one per completed experiment, message states the decision it
   produced. `git log --oneline` should read as the research arc.
 
-## Model roles
-Update the moment a pilot concludes, with a one-line justification and a pointer to the
-experiment dir.
-- auditor: <TBD> — experiments/01_auditor_pilot/
-- judges: see METHODOLOGY.md
-- Never hardcode API keys; use .env (see .env.example).
-
 ## Writing
 Concise. No LLM padding, no restating the question, no summarizing what was just said.
-Reference docs are documentation only — no prose, no narrative, no state that goes stale. This file is for rules only, no current state (nothing that COULD get stale).
-The README *is* the report and is read first: ~1 page plus figures.
+Reference docs are documentation only — no prose, no narrative, no state that goes stale.
+This file is for rules only, no current state (nothing that COULD get stale).

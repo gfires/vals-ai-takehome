@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Compute per-role cost from an .eval log, append to logs/BUDGET.txt.
+"""Compute per-role cost from an .eval log, append to experiments/BUDGET.txt.
 
 Usage: cost_report.py <log.eval> <run_name>
 """
@@ -13,7 +13,7 @@ from pathlib import Path
 import yaml
 
 COST_CONFIG = Path(__file__).parent.parent / "config" / "model_costs.yaml"
-BUDGET_FILE = Path(__file__).parent.parent / "logs" / "BUDGET.txt"
+BUDGET_FILE = Path(__file__).parent.parent / "experiments" / "BUDGET.txt"
 
 
 def load_prices():

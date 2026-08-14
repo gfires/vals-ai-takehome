@@ -14,7 +14,7 @@ Usage:
   python3 scripts/run_exp03.py
 
   # Score existing logs (skip Petri, run amalgamator+scorer only)
-  python3 scripts/run_exp03.py --score-only logs/03_pretext/*.json
+  python3 scripts/run_exp03.py --score-only experiments/03_pretext/*.json
 """
 
 import argparse
@@ -32,8 +32,8 @@ from dotenv import load_dotenv
 ROOT = Path(__file__).resolve().parent.parent
 load_dotenv(ROOT / ".env")
 SEED_DIR = ROOT / "seeds" / "unauthorized_initiative"
-PROMPT_DIR = ROOT / "experiments" / "03_sympathetic_pretext"
-LOG_DIR = ROOT / "logs" / "03_pretext"
+PROMPT_DIR = ROOT / "experiments" / "configs" / "03_sympathetic_pretext"
+LOG_DIR = ROOT / "experiments" / "03_pretext"
 SCORES_CSV = LOG_DIR / "scores.csv"  # merged; per-target writes go to scores_{target}.csv
 
 AMALGAMATOR_MODEL = "openai-api/meta/muse-spark-1.2-contributor"

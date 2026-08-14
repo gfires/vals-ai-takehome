@@ -2,15 +2,15 @@
 set -euo pipefail
 cd "$(dirname "$0")/../.."
 
-log_dir=logs/02_main
+log_dir=experiments/02_main
 
 # Phase 1: Luna judge (primary) — 12 seeds × 2 targets
 inspect eval inspect_petri/audit \
-  --run-config experiments/02_main/config-gpt5mini.yaml \
+  --run-config experiments/configs/02_main/config-gpt5mini.yaml \
   --log-dir "$log_dir" --adaptive-connections false
 
 inspect eval inspect_petri/audit \
-  --run-config experiments/02_main/config-haiku.yaml \
+  --run-config experiments/configs/02_main/config-haiku.yaml \
   --log-dir "$log_dir" --adaptive-connections false
 
 # Phase 2: Re-score Luna transcripts with Sonnet (self-preference probe)

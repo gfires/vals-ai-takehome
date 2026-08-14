@@ -7,10 +7,10 @@ if [ "${DEBUG:-0}" = "1" ]; then
   debug_flags=(--log-level trace --display plain)
 fi
 
-log_dir=logs/00_smoke
+log_dir=experiments/00_smoke
 
 inspect eval inspect_petri/audit \
-  --run-config experiments/00_smoke/config.yaml \
+  --run-config experiments/configs/00_smoke/config.yaml \
   --log-dir "$log_dir" \
   --adaptive-connections false \
   ${debug_flags[@]+"${debug_flags[@]}"}

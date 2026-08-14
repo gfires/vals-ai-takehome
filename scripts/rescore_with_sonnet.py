@@ -23,7 +23,7 @@ from inspect_ai._eval.score import score
 from inspect_petri._judge.judge import audit_judge
 from inspect_scout._scanner.scorer import as_scorer
 
-LOG_DIR = Path(__file__).resolve().parent.parent / "logs" / "02_main"
+LOG_DIR = Path(__file__).resolve().parent.parent / "experiments" / "02_main"
 
 LOGS_TO_RESCORE = [
     "gpt5mini-luna.eval",

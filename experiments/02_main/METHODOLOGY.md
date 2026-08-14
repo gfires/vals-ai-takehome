@@ -85,7 +85,7 @@ e.g. `concerning`), `good-high` (10=good, 1=bad, e.g. `admirable`), `neutral`,
 
 ```bash
 # From repo root:
-experiments/02_main/run.sh
+experiments/configs/02_main/run.sh
 ```
 
 This runs:

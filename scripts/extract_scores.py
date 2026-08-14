@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Append rows to logs/02_main/scores.csv from one or more Petri run JSON dumps.
+"""Append rows to experiments/02_main/scores.csv from one or more Petri run JSON dumps.
 
 Usage: extract_scores.py <run.json> [<run.json> ...]
 Each <run.json> must be a full `inspect log dump --resolve-attachments full`
@@ -12,7 +12,7 @@ import json
 import sys
 from pathlib import Path
 
-SCORES_CSV = Path(__file__).resolve().parent.parent / "logs/02_main/scores.csv"
+SCORES_CSV = Path(__file__).resolve().parent.parent / "experiments/02_main/scores.csv"
 
 
 def rows_from_run(run_json_path):
