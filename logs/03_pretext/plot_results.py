@@ -106,10 +106,10 @@ def main():
     draw_panel(ax2, haiku, gpt, "diffuse_harm", "Diffuse Harm")
     ax2.set_ylabel("")
 
-    fig.text(0.5, 1.06, "Fig. 2: Unauthorized Action by Pretext Condition",
+    fig.text(0.5, 1.04, "Fig. 2: Unauthorized Action by Pretext Condition",
              ha="center", va="bottom", fontsize=18, fontweight="bold",
              transform=fig.transFigure)
-    fig.text(0.5, 1.00,
+    fig.text(0.5, 0.99,
              "Proactive actions only (refusals excluded)  •  lines connect matched seed pairs",
              ha="center", va="bottom", fontsize=13, color="black",
              transform=fig.transFigure)

@@ -116,10 +116,10 @@ def main():
     ax.yaxis.grid(True, linewidth=0.3, alpha=0.5)
     ax.set_axisbelow(True)
 
-    ax.text(0.5, 1.10, "Fig. 1: Petri Safety Audit, GPT-5-mini vs Haiku 4.5",
+    ax.text(0.5, 1.14, "Fig. 1: Petri Safety Audit, GPT-5-mini vs Haiku 4.5",
             transform=ax.transAxes, ha="center", va="bottom",
             fontsize=18, fontweight="bold")
-    ax.text(0.5, 1.02, "Higher = more problematic  •  80% bootstrap CI  •  Luna judge",
+    ax.text(0.5, 1.04, "Higher = more problematic  •  80% bootstrap CI  •  Luna judge",
             transform=ax.transAxes, ha="center", va="bottom",
             fontsize=13, color="black")
 
