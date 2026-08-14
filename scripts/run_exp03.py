@@ -34,7 +34,7 @@ load_dotenv(ROOT / ".env")
 SEED_DIR = ROOT / "seeds" / "unauthorized_initiative"
 PROMPT_DIR = ROOT / "experiments" / "03_sympathetic_pretext"
 LOG_DIR = ROOT / "logs" / "03_pretext"
-SCORES_CSV = LOG_DIR / "scores.csv"
+SCORES_CSV = LOG_DIR / "scores.csv"  # merged; per-target writes go to scores_{target}.csv
 
 AMALGAMATOR_MODEL = "openai-api/meta/muse-spark-1.2-contributor"
 SCORER_MODEL = "openai/gpt-5.6-luna"
@@ -466,41 +466,25 @@ def score_log_file(json_path: Path, pairs: list[dict]) -> list[dict]:
     return rows
 
 
-def write_scores(rows: list[dict]):
-    """Append rows to scores.csv, deduplicating on (seed, target)."""
+def write_scores(rows: list[dict], target_label: str | None = None):
+    """Write rows to a per-target CSV (scores_{target}.csv).
+
+    When target_label is None (e.g. --score-only), falls back to scores.csv.
+    """
     LOG_DIR.mkdir(parents=True, exist_ok=True)
+    out_path = LOG_DIR / f"scores_{target_label}.csv" if target_label else SCORES_CSV
 
-    existing = []
-    fieldnames = None
-    if SCORES_CSV.exists():
-        with SCORES_CSV.open() as f:
-            reader = csv.DictReader(f)
-            fieldnames = reader.fieldnames
-            existing = list(reader)
-    existing_keys = {(r["seed"], r["target"]) for r in existing}
-
-    new_rows = []
-    for row in rows:
-        key = (row["seed"], row["target"])
-        if key in existing_keys:
-            print(f"  skip (already present): {key}")
-            continue
-        if fieldnames is None:
-            fieldnames = list(row.keys())
-        new_rows.append(row)
-        existing_keys.add(key)
-
-    if not new_rows:
-        print("Nothing new to add.")
+    fieldnames = list(rows[0].keys()) if rows else None
+    if not rows:
+        print("Nothing to write.")
         return
 
-    all_rows = existing + new_rows
-    with SCORES_CSV.open("w", newline="") as f:
+    with out_path.open("w", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
         writer.writeheader()
-        writer.writerows(all_rows)
+        writer.writerows(rows)
 
-    print(f"\nAdded {len(new_rows)} row(s) to {SCORES_CSV}")
+    print(f"\nWrote {len(rows)} row(s) to {out_path}")
 
 
 # ---------------------------------------------------------------------------
@@ -517,6 +501,10 @@ def main():
         "--score-only", nargs="+", metavar="JSON",
         help="Skip Petri; score existing JSON dumps",
     )
+    parser.add_argument(
+        "--target", choices=["haiku", "gpt5mini"],
+        help="Run only one target (default: both)",
+    )
     args = parser.parse_args()
 
     pairs = load_seed_pairs()
@@ -526,18 +514,23 @@ def main():
         for json_path in args.score_only:
             print(f"\nScoring {json_path}...")
             all_rows.extend(score_log_file(Path(json_path), pairs))
-        write_scores(all_rows)
+        write_scores(all_rows)  # no target_label — writes to scores.csv
         return
 
     if args.smoke:
-        pairs = pairs[:1]
+        run_pairs = pairs[:1]
         targets = [TARGETS[0]]
     else:
-        targets = TARGETS
+        run_pairs = pairs
+        if args.target:
+            target_map = {label: (model, label) for model, label in TARGETS}
+            targets = [target_map[args.target]]
+        else:
+            targets = TARGETS
 
-    # Collect all seed IDs
+    # Collect all seed IDs for the Petri run
     seed_ids = []
-    for p in pairs:
+    for p in run_pairs:
         seed_ids.append(p["sympathetic_seed"])
         seed_ids.append(p["neutral_seed"])
 
@@ -547,13 +540,13 @@ def main():
         json_path = run_petri(target_model, target_label, seed_ids)
         json_paths.append(json_path)
 
-    # Score all transcripts
+    # Score all transcripts — write per-target to avoid races
     all_rows = []
-    for json_path in json_paths:
+    for (_, target_label), json_path in zip(targets, json_paths):
         print(f"\nScoring {json_path.name}...")
-        all_rows.extend(score_log_file(json_path, pairs))
-
-    write_scores(all_rows)
+        target_rows = score_log_file(json_path, pairs)
+        write_scores(target_rows, target_label)
+        all_rows.extend(target_rows)
 
     # Print summary
     print("\n=== Summary ===")
